@@ -1,8 +1,9 @@
 .item-wrapper {
-  background-color: #faf9f6;
   padding: 1rem;
   margin-top: 10px;
   margin-bottom: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
 }
 
 .item-card-header {
@@ -10,6 +11,7 @@
   justify-content: space-between;
 }
 
-.item-card-body {
+.item-card-body > form {
   display: flex;
+  justify-content: space-between;
 }

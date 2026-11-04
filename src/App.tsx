@@ -22,6 +22,7 @@ const userRooms: Room[] = [
 function App() {
   const [showModal, setShowModal] = useState(false);
   const [rooms, setRooms] = useState(userRooms);
+  const [showAddRoom, setShowAddRoom] = useState(false);
 
   const handleAddItemFromForm = (item: Item) => {
     const itemExists = rooms.some(
@@ -77,7 +78,10 @@ function App() {
       };
       setRooms([...rooms, newRoom]);
     }
+    // Reset the form input box
     form.reset();
+    // Hide the add form section
+    setShowAddRoom(false);
   };
 
   return (
@@ -106,8 +110,12 @@ function App() {
                 document.body
               )}
           </div>
-          <button>Add New Room</button>
-          <div id="add-room">
+          {/* Button that shows/hides form to add a new room */}
+          <button onClick={() => setShowAddRoom(!showAddRoom)}>
+            {!showAddRoom ? "Add New Room" : "Hide"}
+          </button>
+          {/* Form for adding a new room */}
+          <div id="add-room" hidden={!showAddRoom}>
             <form onSubmit={addRoom}>
               <label htmlFor="room-name">Room Name</label>
               <input type="text" name="room-name" />

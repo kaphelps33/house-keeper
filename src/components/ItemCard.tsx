@@ -38,30 +38,36 @@ function ItemCard({ item, removeItem }: ItemCardProps) {
       <div className="item-card-body">
         <form>
           <p>Stock:</p>
-          <label htmlFor="item-full">Full</label>
-          <input
-            checked={stock === "full"}
-            type="radio"
-            name="item-stock"
-            value={"full"}
-            onChange={handleStockSelection}
-          />
-          <label htmlFor="item-low">Low</label>
-          <input
-            checked={stock === "low"}
-            type="radio"
-            name="item-stock"
-            value={"low"}
-            onChange={handleStockSelection}
-          />
-          <label htmlFor="item-empty">Empty</label>
-          <input
-            checked={stock === "empty"}
-            type="radio"
-            name="item-stock"
-            value={"empty"}
-            onChange={handleStockSelection}
-          />
+          <div className="radio-wrapper">
+            <input
+              checked={stock === "full"}
+              type="radio"
+              name="item-stock"
+              value={"full"}
+              onChange={handleStockSelection}
+            />
+            <label htmlFor="item-full">Full</label>
+          </div>
+          <div className="radio-wrapper">
+            <input
+              checked={stock === "low"}
+              type="radio"
+              name="item-stock"
+              value={"low"}
+              onChange={handleStockSelection}
+            />
+            <label htmlFor="item-low">Low</label>
+          </div>
+          <div className="radio-wrapper">
+            <input
+              checked={stock === "empty"}
+              type="radio"
+              name="item-stock"
+              value={"empty"}
+              onChange={handleStockSelection}
+            />
+            <label htmlFor="item-empty">Empty</label>
+          </div>
         </form>
       </div>
     </div>
