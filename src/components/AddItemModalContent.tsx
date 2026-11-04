@@ -24,6 +24,7 @@ function AddItemModalContent({
       stock: "full",
       room: roomId
     };
+    form.reset();
     onFormSubmit(item);
   };
 

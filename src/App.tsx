@@ -26,8 +26,13 @@ function App() {
   const handleAddItemFromForm = (item: Item) => {
     const itemExists = rooms.some(
       (room) =>
-        room.id === item.room && room.items.some((item) => item.id === item.id)
+        room.id === item.room &&
+        room.items.some(
+          (existingItem) =>
+            existingItem.name.toLowerCase() === item.name.toLowerCase()
+        )
     );
+
     if (itemExists) {
       alert(`${item.name} already exists!`);
     } else {
@@ -38,7 +43,9 @@ function App() {
             : room
         )
       );
+      setShowModal(false);
     }
+    console.log(rooms);
   };
 
   const handleItemStockChange = (existingItem: Item, newStock: string) => {
@@ -46,13 +53,16 @@ function App() {
   };
 
   const handleRemoveItem = (item: Item) => {
+    // Prompt user to confirm item delete
     if (window.confirm(`Are you sure you would like to remove ${item.name}?`)) {
       setRooms((prevRooms) =>
         prevRooms.map((room) =>
           room.id === item.room
             ? {
                 ...room,
-                items: room.items.filter((item) => item.id !== item.id)
+                items: room.items.filter(
+                  (existingItem) => existingItem.id !== item.id
+                )
               }
             : room
         )
