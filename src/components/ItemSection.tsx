@@ -16,9 +16,9 @@ function ItemSection({ rooms, removeItemFromRoom }: ItemSectionProps) {
         <div className="column" key={room.id}>
           <div className="room-header">
             <h4>{room.name}</h4>
+            <small>({room.items.length})</small>
             <button>Remove Room</button>
           </div>
-          <p>Items: {room.items.length}</p>
           {/* Dynamically render items in room */}
           {room.items.map((item) => (
             <ItemCard item={item} removeItem={() => removeItemFromRoom(item)} />

@@ -1,6 +1,6 @@
 body {
   line-height: 1.5em;
-  background-color: #faf9f6;
+  background-color: #e6e6e6;
   font-family: "Tahoma", sans-serif;
   padding: 0;
   margin: 0;
@@ -23,15 +23,11 @@ header {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: #e9e4d7;
+  background-color: #7b9669;
 }
 
 main {
   padding: 1rem;
-}
-
-select:hover {
-  cursor: pointer;
 }
 
 button {
@@ -54,16 +50,30 @@ button {
 }
 
 button:hover {
-  border-color: #bc7b6f;
+  /* border-color: #bc7b6f; */
+  border-color: #404e3b;
   box-shadow: rgba(0, 0, 0, 0.1) 0 5px 5px;
-  color: #202124;
-  background-color: #e4a499;
-  transition: background-color 0.2s ease;
+  /* color: #202124; */
+  /* background-color: #e4a499; */
+  color: #e6e6e6;
+  background-color: #6c8480;
+
+  /* transition: background-color 0.2s ease; */
+  transition: 0.2s ease;
 }
 
 button:focus {
   border-color: #4285f4;
   outline: none;
+}
+
+.item-info-section {
+  background-color: #bacab1;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .add-item-form {
@@ -94,19 +104,13 @@ button:focus {
   justify-content: space-between;
 }
 
-.item-info-section {
-  background-color: #d8d0b9;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-}
-
 .column-container {
   display: flex;
   gap: 20px;
 }
 
 .column {
-  background-color: #d8d0b9;
+  background-color: #bacab1;
   flex: 1;
   padding: 1rem;
   max-width: 300px;

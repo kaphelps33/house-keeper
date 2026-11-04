@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "./App.css";
 import { createPortal } from "react-dom";
 import AddItemModalContent from "./components/AddItemModalContent";
 import type { Item } from "./types/Item";
@@ -97,9 +96,9 @@ function App() {
       <main>
         {/* Add item/room section */}
         <section className="item-info-section">
-          <h2>Add An Item</h2>
+          <h2>Room and Item Manager</h2>
           <div>
-            <button onClick={() => setShowModal(true)}>Add Items</button>
+            <button onClick={() => setShowModal(true)}>Add New Item</button>
             {showModal &&
               createPortal(
                 <AddItemModalContent
