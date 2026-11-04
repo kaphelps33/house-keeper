@@ -5,9 +5,14 @@ import ItemCard from "./ItemCard";
 interface ItemSectionProps {
   rooms: Room[];
   removeItemFromRoom: (item: Item) => void;
+  removeRoom: (room: Room) => void;
 }
 
-function ItemSection({ rooms, removeItemFromRoom }: ItemSectionProps) {
+function ItemSection({
+  rooms,
+  removeItemFromRoom,
+  removeRoom
+}: ItemSectionProps) {
   // Handles removing an item from a specific room
   return (
     <section className="column-container">
@@ -17,11 +22,15 @@ function ItemSection({ rooms, removeItemFromRoom }: ItemSectionProps) {
           <div className="room-header">
             <h4>{room.name}</h4>
             <small>({room.items.length})</small>
-            <button>Remove Room</button>
+            <button onClick={() => removeRoom(room)}>Remove Room</button>
           </div>
           {/* Dynamically render items in room */}
           {room.items.map((item) => (
-            <ItemCard item={item} removeItem={() => removeItemFromRoom(item)} />
+            <ItemCard
+              item={item}
+              removeItem={() => removeItemFromRoom(item)}
+              key={room.id}
+            />
           ))}
         </div>
       ))}

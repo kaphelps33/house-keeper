@@ -48,7 +48,7 @@ function App() {
     console.log(rooms);
   };
 
-  const handleItemStockChange = (existingItem: Item, newStock: string) => {
+  const handleItemStockChange = (item: Item, newStock: string) => {
     // TODO: IMPLEMENT THIS
   };
 
@@ -70,6 +70,15 @@ function App() {
     }
   };
 
+  const handleRemoveRoom = (room: Room) => {
+    // Prompt user to confirm item delete
+    if (window.confirm(`Are you sure you would like to remove ${room.name}?`)) {
+      setRooms((prevRooms) =>
+        prevRooms.filter((existingRoom) => existingRoom.id !== room.id)
+      );
+    }
+  };
+
   const addRoom = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.target;
@@ -78,8 +87,10 @@ function App() {
     // Check for duplicates
     const roomExists = rooms.some((room) => room.name === roomName);
     if (roomExists) {
+      // if the room exists let the user know
       alert(`${roomName} already exists!`);
     } else {
+      // if the room does not exist, add a new room based on user input
       const newRoom: Room = {
         id: crypto.randomUUID(),
         name: roomName,
@@ -133,7 +144,11 @@ function App() {
           </div>
         </section>
         {/* Lists all items and handles operations on them */}
-        <ItemSection rooms={rooms} removeItemFromRoom={handleRemoveItem} />
+        <ItemSection
+          rooms={rooms}
+          removeItemFromRoom={handleRemoveItem}
+          removeRoom={handleRemoveRoom}
+        />
       </main>
     </>
   );
