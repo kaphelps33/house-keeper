@@ -9,7 +9,7 @@ interface ItemCardProps {
 function ItemCard({ item, removeItem }: ItemCardProps) {
   const [stock, setStock] = useState("full");
 
-  const handleStockSelection = (event: any) => {
+  const handleStockSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStock(event.target.value);
   };
 
@@ -30,20 +30,35 @@ function ItemCard({ item, removeItem }: ItemCardProps) {
       style={{ backgroundColor: handleStockColor() }}
     >
       <h3>{item.name}</h3>
+      <button onClick={() => removeItem(item)}>&#128465;</button>
       {/* Select item stock */}
-      <label htmlFor="stock">Stock:</label>
-      {/* TODO: REPLACE THIS WITH RADIO BUTTONS */}
-      <select
-        name="stock"
-        id="stock"
-        defaultValue={stock}
-        onChange={handleStockSelection}
-      >
-        <option value={"full"}>Full</option>
-        <option value={"low"}>Low</option>
-        <option value={"empty"}>Empty</option>
-      </select>
-      <button onClick={() => removeItem(item)}>X</button>
+      <form>
+        <p>Stock:</p>
+        <label htmlFor="item-full">Full</label>
+        <input
+          checked={stock === "full"}
+          type="radio"
+          name="item-stock"
+          value={"full"}
+          onChange={handleStockSelection}
+        />
+        <label htmlFor="item-low">Low</label>
+        <input
+          checked={stock === "low"}
+          type="radio"
+          name="item-stock"
+          value={"low"}
+          onChange={handleStockSelection}
+        />
+        <label htmlFor="item-empty">Empty</label>
+        <input
+          checked={stock === "empty"}
+          type="radio"
+          name="item-stock"
+          value={"empty"}
+          onChange={handleStockSelection}
+        />
+      </form>
     </div>
   );
 }
