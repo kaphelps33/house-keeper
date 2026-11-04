@@ -34,9 +34,9 @@ function AddItemModalContent({
         <h4>Add Item</h4>
         <form onSubmit={handleAddItem} className="add-item-form">
           <label htmlFor="item-name">Item Name</label>
-          <input type="text" name="item-name" />
+          <input type="text" name="item-name" min={1} required />
           <label htmlFor="item-room">Room</label>
-          <select name="item-room" id="item-room">
+          <select name="item-room" id="item-room" required>
             {rooms.map((room) => (
               <option value={room.id} key={room.id}>
                 {room.name}

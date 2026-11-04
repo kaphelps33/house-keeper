@@ -69,6 +69,9 @@ function ItemCard({ item, removeItem }: ItemCardProps) {
             <label htmlFor="item-empty">Empty</label>
           </div>
         </form>
+        <div>
+          <button hidden={stock !== "empty"}>Add to Shopping Cart</button>
+        </div>
       </div>
     </div>
   );

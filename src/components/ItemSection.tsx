@@ -19,10 +19,18 @@ function ItemSection({
       {/* Dynamically render room columns */}
       {rooms.map((room) => (
         <div className="column" key={room.id}>
+          {/* Header for the room column: Name, item number, remove button */}
           <div className="room-header">
             <h4>{room.name}</h4>
+            {/* Indicator for how many items are in a room */}
             <small>({room.items.length})</small>
-            <button onClick={() => removeRoom(room)}>Remove Room</button>
+            {/* Button to remove rooms. The shopping list cannot be removed */}
+            <button
+              onClick={() => removeRoom(room)}
+              hidden={room.name === "Shopping List"}
+            >
+              Remove Room
+            </button>
           </div>
           {/* Dynamically render items in room */}
           {room.items.map((item) => (

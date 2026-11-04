@@ -15,6 +15,11 @@ const userRooms: Room[] = [
     id: crypto.randomUUID(),
     name: "Kitchen",
     items: []
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Shopping List",
+    items: []
   }
 ];
 
@@ -85,7 +90,9 @@ function App() {
     const formData = new FormData(form);
     const roomName = formData.get("room-name") as string;
     // Check for duplicates
-    const roomExists = rooms.some((room) => room.name === roomName);
+    const roomExists = rooms.some(
+      (room) => room.name.toLowerCase() === roomName.toLowerCase()
+    );
     if (roomExists) {
       // if the room exists let the user know
       alert(`${roomName} already exists!`);
@@ -102,6 +109,10 @@ function App() {
     form.reset();
     // Hide the add form section
     setShowAddRoom(false);
+  };
+
+  const handleAddItemToShoppingCart = (item: Item) => {
+    // TODO: IMPLEMENT THIS
   };
 
   return (
@@ -138,7 +149,7 @@ function App() {
           <div id="add-room" hidden={!showAddRoom}>
             <form onSubmit={addRoom}>
               <label htmlFor="room-name">Room Name</label>
-              <input type="text" name="room-name" />
+              <input type="text" name="room-name" min={1} required />
               <button type="submit">Submit</button>
             </form>
           </div>
