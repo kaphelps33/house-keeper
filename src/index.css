@@ -34,6 +34,38 @@ select:hover {
   cursor: pointer;
 }
 
+button {
+  background-color: #f8f9fa;
+  border: 1px solid #f8f9fa;
+  border-radius: 4px;
+  color: #3c4043;
+  cursor: pointer;
+  font-family: arial, sans-serif;
+  font-size: 14px;
+  height: 36px;
+  line-height: 27px;
+  min-width: 54px;
+  padding: 0 16px;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: pre;
+}
+
+button:hover {
+  border-color: #bc7b6f;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 5px 5px;
+  color: #202124;
+  background-color: #e4a499;
+  transition: background-color 0.2s ease;
+}
+
+button:focus {
+  border-color: #4285f4;
+  outline: none;
+}
+
 .add-item-form {
   display: flex;
   flex-direction: column;
@@ -75,13 +107,6 @@ select:hover {
   flex: 1;
   padding: 1rem;
   max-width: 300px;
-}
-
-.item-wrapper {
-  background-color: #faf9f6;
-  padding: 1rem;
-  margin-top: 10px;
-  margin-bottom: 10px;
 }
 
 .room-header {

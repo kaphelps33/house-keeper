@@ -41,6 +41,10 @@ function App() {
     }
   };
 
+  const handleItemStockChange = (existingItem: Item, newStock: string) => {
+    // TODO: IMPLEMENT THIS
+  };
+
   const handleRemoveItem = (item: Item) => {
     if (window.confirm(`Are you sure you would like to remove ${item.name}?`)) {
       setRooms((prevRooms) =>

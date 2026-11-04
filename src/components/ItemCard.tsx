@@ -1,5 +1,6 @@
-import { use, useState } from "react";
+import { useState } from "react";
 import type { Item } from "../types/Item";
+import "./ItemCard.css";
 
 interface ItemCardProps {
   item: Item;
@@ -29,36 +30,40 @@ function ItemCard({ item, removeItem }: ItemCardProps) {
       className="item-wrapper"
       style={{ backgroundColor: handleStockColor() }}
     >
-      <h3>{item.name}</h3>
-      <button onClick={() => removeItem(item)}>&#128465;</button>
+      <div className="item-card-header">
+        <h3>{item.name}</h3>
+        <button onClick={() => removeItem(item)}>X</button>
+      </div>
       {/* Select item stock */}
-      <form>
-        <p>Stock:</p>
-        <label htmlFor="item-full">Full</label>
-        <input
-          checked={stock === "full"}
-          type="radio"
-          name="item-stock"
-          value={"full"}
-          onChange={handleStockSelection}
-        />
-        <label htmlFor="item-low">Low</label>
-        <input
-          checked={stock === "low"}
-          type="radio"
-          name="item-stock"
-          value={"low"}
-          onChange={handleStockSelection}
-        />
-        <label htmlFor="item-empty">Empty</label>
-        <input
-          checked={stock === "empty"}
-          type="radio"
-          name="item-stock"
-          value={"empty"}
-          onChange={handleStockSelection}
-        />
-      </form>
+      <div className="item-card-body">
+        <form>
+          <p>Stock:</p>
+          <label htmlFor="item-full">Full</label>
+          <input
+            checked={stock === "full"}
+            type="radio"
+            name="item-stock"
+            value={"full"}
+            onChange={handleStockSelection}
+          />
+          <label htmlFor="item-low">Low</label>
+          <input
+            checked={stock === "low"}
+            type="radio"
+            name="item-stock"
+            value={"low"}
+            onChange={handleStockSelection}
+          />
+          <label htmlFor="item-empty">Empty</label>
+          <input
+            checked={stock === "empty"}
+            type="radio"
+            name="item-stock"
+            value={"empty"}
+            onChange={handleStockSelection}
+          />
+        </form>
+      </div>
     </div>
   );
 }
