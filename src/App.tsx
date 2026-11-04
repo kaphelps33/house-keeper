@@ -4,7 +4,6 @@ import { createPortal } from "react-dom";
 import AddItemModalContent from "./components/AddItemModalContent";
 import type { Item } from "./types/Item";
 import type { Room } from "./types/Room";
-import ItemCard from "./components/ItemCard";
 import ItemSection from "./components/ItemSection";
 
 const userRooms: Room[] = [
@@ -25,14 +24,21 @@ function App() {
   const [rooms, setRooms] = useState(userRooms);
 
   const handleAddItemFromForm = (item: Item) => {
-    // TODO: PREVENT DUPLICATE ITEMS FROM BEING ADDED
-    const roomItemList = rooms.map((room) => room.id === item.room && room);
-    // const itemExists = rooms.some(rooms.map((room) => room.id === item.room));
-    setRooms((prevRooms) =>
-      prevRooms.map((room) =>
-        room.id === item.room ? { ...room, items: [...room.items, item] } : room
-      )
+    const itemExists = rooms.some(
+      (room) =>
+        room.id === item.room && room.items.some((item) => item.id === item.id)
     );
+    if (itemExists) {
+      alert(`${item.name} already exists!`);
+    } else {
+      setRooms((prevRooms) =>
+        prevRooms.map((room) =>
+          room.id === item.room
+            ? { ...room, items: [...room.items, item] }
+            : room
+        )
+      );
+    }
   };
 
   const handleRemoveItem = (item: Item) => {
