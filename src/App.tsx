@@ -5,6 +5,7 @@ import AddItemModalContent from "./components/AddItemModalContent";
 import type { Item } from "./types/Item";
 import type { Room } from "./types/Room";
 import ItemCard from "./components/ItemCard";
+import ItemSection from "./components/ItemSection";
 
 const userRooms: Room[] = [
   {
@@ -24,6 +25,9 @@ function App() {
   const [rooms, setRooms] = useState(userRooms);
 
   const handleAddItemFromForm = (item: Item) => {
+    // TODO: PREVENT DUPLICATE ITEMS FROM BEING ADDED
+    const roomItemList = rooms.map((room) => room.id === item.room && room);
+    // const itemExists = rooms.some(rooms.map((room) => room.id === item.room));
     setRooms((prevRooms) =>
       prevRooms.map((room) =>
         room.id === item.room ? { ...room, items: [...room.items, item] } : room
@@ -32,7 +36,18 @@ function App() {
   };
 
   const handleRemoveItem = (item: Item) => {
-    alert(`${item.name}`);
+    if (window.confirm(`Are you sure you would like to remove ${item.name}?`)) {
+      setRooms((prevRooms) =>
+        prevRooms.map((room) =>
+          room.id === item.room
+            ? {
+                ...room,
+                items: room.items.filter((item) => item.id !== item.id)
+              }
+            : room
+        )
+      );
+    }
   };
 
   const addRoom = (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -90,25 +105,8 @@ function App() {
             </form>
           </div>
         </section>
-        <section className="column-container">
-          {/* Dynamically render room columns */}
-          {rooms.map((room) => (
-            <div className="column" key={room.id}>
-              <div className="room-header">
-                <h4>{room.name}</h4>
-                <button>Remove Room</button>
-              </div>
-              <p>Items: {room.items.length}</p>
-              {/* Dynamically render items in room */}
-              {room.items.map((item) => (
-                <ItemCard
-                  item={item}
-                  removeItem={() => handleRemoveItem(item)}
-                />
-              ))}
-            </div>
-          ))}
-        </section>
+        {/* Lists all items and handles operations on them */}
+        <ItemSection rooms={rooms} removeItemFromRoom={handleRemoveItem} />
       </main>
     </>
   );

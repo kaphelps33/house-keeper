@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import type { Item } from "../types/Item";
 
 interface ItemCardProps {
@@ -8,7 +8,7 @@ interface ItemCardProps {
 
 function ItemCard({ item, removeItem }: ItemCardProps) {
   const [stock, setStock] = useState("full");
-
+  // Handles stocks updates from user
   const handleStockSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStock(event.target.value);
   };
