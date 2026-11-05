@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import AddItemModalContent from "./components/AddItemModalContent";
-import type { Item } from "./types/Item";
-import type { Room } from "./types/Room";
-import ItemSection from "./components/ItemSection";
+import AddItemModalContent from "../components/AddItemModalContent";
+import type { Item } from "../types/Item";
+import type { Room } from "../types/Room";
+import ItemSection from "../components/ItemSection";
 
 const userRooms: Room[] = [
   {
@@ -117,13 +117,6 @@ function App() {
 
   return (
     <>
-      {/* Header */}
-      <header>
-        <h1>House Keeper</h1>
-        <div>
-          <p>User Name</p>
-        </div>
-      </header>
       {/* Main */}
       <main>
         {/* Add item/room section */}
