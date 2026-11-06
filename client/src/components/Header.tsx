@@ -12,7 +12,8 @@ function Header() {
         </ul>
       </nav>
       <div>
-        <p>User Name</p>
+        {/* TODO: LOGIN AUTH -> CHANGE TO USERS NAME */}
+        <button onClick={() => (window.location.href = "/login")}>Login</button>
       </div>
     </header>
   );
