@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import type { Item } from "../types/Item";
 import "./ItemCard.css";
+import RemoveButton from "./RemoveButton";
 
 interface ItemCardProps {
   item: Item;
@@ -34,9 +33,7 @@ function ItemCard({ item, removeItem }: ItemCardProps) {
     >
       <div className="item-card-header">
         <h3>{item.name}</h3>
-        <button onClick={() => removeItem(item)} className="remove-btn">
-          <FontAwesomeIcon icon={faTrashCan} />
-        </button>
+        <RemoveButton clickFunction={() => removeItem(item)} />
       </div>
       {/* Select item stock */}
       <div className="item-card-body">

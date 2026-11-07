@@ -1,8 +1,8 @@
 import type { Room } from "../types/Room";
 import type { Item } from "../types/Item";
 import ItemCard from "./ItemCard";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import RemoveButton from "./RemoveButton";
+
 import "./ItemColumn.css";
 
 interface ItemColumnProps {
@@ -20,9 +20,7 @@ function ItemColumn({ room, removeItemFromRoom, removeRoom }: ItemColumnProps) {
         {/* How many items in rooms */}
         <small>({room.items.length})</small>
         {/* Button to remove rooms */}
-        <button onClick={() => removeRoom(room)} className="remove-btn">
-          <FontAwesomeIcon icon={faTrashCan} />
-        </button>
+        <RemoveButton clickFunction={() => removeRoom(room)} />
       </div>
       {/* Dynamically render items in room */}
       {room.items.map((item) => (
