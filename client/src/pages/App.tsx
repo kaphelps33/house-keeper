@@ -48,10 +48,6 @@ function App() {
     console.log(rooms);
   };
 
-  const handleItemStockChange = (item: Item, newStock: string) => {
-    // TODO: IMPLEMENT THIS
-  };
-
   const handleRemoveItem = (item: Item) => {
     // Prompt user to confirm item delete
     if (window.confirm(`Are you sure you would like to remove ${item.name}?`)) {
@@ -106,10 +102,6 @@ function App() {
     setShowAddRoom(false);
   };
 
-  const handleAddItemToShoppingCart = (item: Item) => {
-    // TODO: IMPLEMENT THIS
-  };
-
   return (
     <>
       {/* Main */}
@@ -152,6 +144,5 @@ function App() {
     </>
   );
 }
-// TODO: Items can be added to a "shopping list"
 
 export default App;

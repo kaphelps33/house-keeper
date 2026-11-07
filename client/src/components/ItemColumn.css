@@ -1,0 +1,7 @@
+.add-item-wrapper {
+  margin-top: 10px;
+  gap: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
