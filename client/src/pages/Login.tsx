@@ -11,14 +11,14 @@ function Login() {
           <label htmlFor="username">Username</label>
           <input type="text" name="username" />
           <label htmlFor="password">Password</label>
-          <input type={showPassword ? "password" : "text"} name="password" />
+          <input type={showPassword ? "text" : "password"} name="password" />
           <button
             type="button"
             onClick={() => {
               setShowPassword((prev) => !prev);
             }}
           >
-            {showPassword ? "Show" : "Hide"} Password
+            {showPassword ? "Hide" : "Show"} Password
           </button>
 
           <button type="submit">Log In</button>

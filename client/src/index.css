@@ -76,16 +76,17 @@ button {
 }
 
 button:hover {
-  /* border-color: #bc7b6f; */
   border-color: #404e3b;
   box-shadow: rgba(0, 0, 0, 0.1) 0 5px 5px;
-  /* color: #202124; */
-  /* background-color: #e4a499; */
   color: #e6e6e6;
   background-color: #6c8480;
 
   /* transition: background-color 0.2s ease; */
   transition: 0.2s ease;
+}
+
+.remove-btn:hover {
+  background-color: #dc3545;
 }
 
 button:focus {

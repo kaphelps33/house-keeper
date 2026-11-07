@@ -1,5 +1,8 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import type { Room } from "../types/Room";
 import type { Item } from "../types/Item";
+import { useState } from "react";
 import ItemCard from "./ItemCard";
 
 interface ItemSectionProps {
@@ -13,6 +16,7 @@ function ItemSection({
   removeItemFromRoom,
   removeRoom
 }: ItemSectionProps) {
+  const [itemAddHidden, setItemAddHidden] = useState(true);
   // Handles removing an item from a specific room
   return (
     <section className="column-container">
@@ -24,12 +28,10 @@ function ItemSection({
             <h4>{room.name}</h4>
             {/* Indicator for how many items are in a room */}
             <small>({room.items.length})</small>
+
             {/* Button to remove rooms. The shopping list cannot be removed */}
-            <button
-              onClick={() => removeRoom(room)}
-              hidden={room.name === "Shopping List"}
-            >
-              Remove Room
+            <button onClick={() => removeRoom(room)} className="remove-btn">
+              <FontAwesomeIcon icon={faTrashCan} />
             </button>
           </div>
           {/* Dynamically render items in room */}

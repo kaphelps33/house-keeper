@@ -15,11 +15,6 @@ const userRooms: Room[] = [
     id: crypto.randomUUID(),
     name: "Kitchen",
     items: []
-  },
-  {
-    id: crypto.randomUUID(),
-    name: "Shopping List",
-    items: []
   }
 ];
 
