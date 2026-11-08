@@ -4,6 +4,7 @@ import AddItemModalContent from "../components/AddItemModalContent";
 import type { Item } from "../types/Item";
 import type { Room } from "../types/Room";
 import ItemSection from "../components/ItemSection";
+import Button from "../components/atoms/button/Button";
 
 const userRooms: Room[] = [
   {
@@ -110,7 +111,10 @@ function App() {
         <section className="item-info-section">
           <h2>Room and Item Manager</h2>
           <div>
-            <button onClick={() => setShowModal(true)}>Add New Item</button>
+            <Button
+              label="Add New Item"
+              onClick={() => setShowModal((prev) => !prev)}
+            />
             {showModal &&
               createPortal(
                 <AddItemModalContent
@@ -122,15 +126,16 @@ function App() {
               )}
           </div>
           {/* Button that shows/hides form to add a new room */}
-          <button onClick={() => setShowAddRoom(!showAddRoom)}>
-            {!showAddRoom ? "Add New Room" : "Hide"}
-          </button>
+          <Button
+            label={!showAddRoom ? "Add New Room" : "Hide"}
+            onClick={() => setShowAddRoom(!showAddRoom)}
+          />
           {/* Form for adding a new room */}
           <div id="add-room" hidden={!showAddRoom}>
             <form onSubmit={addRoom}>
               <label htmlFor="room-name">Room Name</label>
               <input type="text" name="room-name" min={1} required />
-              <button type="submit">Submit</button>
+              <Button type="submit" label="Submit" />
             </form>
           </div>
         </section>

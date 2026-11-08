@@ -1,7 +1,7 @@
 import type { Room } from "../types/Room";
 import type { Item } from "../types/Item";
 import ItemCard from "./ItemCard";
-import RemoveButton from "./RemoveButton";
+import Button from "./atoms/button/Button";
 
 import "./ItemColumn.css";
 
@@ -20,7 +20,7 @@ function ItemColumn({ room, removeItemFromRoom, removeRoom }: ItemColumnProps) {
         {/* How many items in rooms */}
         <small>({room.items.length})</small>
         {/* Button to remove rooms */}
-        <RemoveButton clickFunction={() => removeRoom(room)} />
+        <Button label="Remove Room" onClick={() => removeRoom(room)} />
       </div>
       {/* Dynamically render items in room */}
       {room.items.map((item) => (

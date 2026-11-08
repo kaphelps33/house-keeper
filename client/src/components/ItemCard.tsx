@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Item } from "../types/Item";
 import "./ItemCard.css";
-import RemoveButton from "./RemoveButton";
+import Button from "./atoms/button/Button";
 
 interface ItemCardProps {
   item: Item;
@@ -33,7 +33,7 @@ function ItemCard({ item, removeItem }: ItemCardProps) {
     >
       <div className="item-card-header">
         <h3>{item.name}</h3>
-        <RemoveButton clickFunction={() => removeItem(item)} />
+        <Button label="Remove Item" onClick={() => removeItem(item)} />
       </div>
       {/* Select item stock */}
       <div className="item-card-body">
@@ -71,7 +71,7 @@ function ItemCard({ item, removeItem }: ItemCardProps) {
           </div>
         </form>
         <div>
-          <button hidden={stock !== "empty"}>Add to Shopping Cart</button>
+          <Button label="Add to Shopping Cart" hidden={stock !== "empty"} />
         </div>
       </div>
     </div>
