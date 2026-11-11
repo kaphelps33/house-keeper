@@ -20,7 +20,11 @@ function ItemColumn({ room, removeItemFromRoom, removeRoom }: ItemColumnProps) {
         {/* How many items in rooms */}
         <small>({room.items.length})</small>
         {/* Button to remove rooms */}
-        <Button label="Remove Room" onClick={() => removeRoom(room)} />
+        <Button
+          variant="danger"
+          children="Remove Room"
+          onClick={() => removeRoom(room)}
+        />
       </div>
       {/* Dynamically render items in room */}
       {room.items.map((item) => (

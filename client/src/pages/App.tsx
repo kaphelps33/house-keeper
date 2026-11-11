@@ -112,7 +112,8 @@ function App() {
           <h2>Room and Item Manager</h2>
           <div>
             <Button
-              label="Add New Item"
+              children="Add New Item"
+              variant="secondary"
               onClick={() => setShowModal((prev) => !prev)}
             />
             {showModal &&
@@ -127,7 +128,8 @@ function App() {
           </div>
           {/* Button that shows/hides form to add a new room */}
           <Button
-            label={!showAddRoom ? "Add New Room" : "Hide"}
+            variant="primary"
+            children={!showAddRoom ? "Add New Room" : "Hide"}
             onClick={() => setShowAddRoom(!showAddRoom)}
           />
           {/* Form for adding a new room */}
@@ -135,7 +137,7 @@ function App() {
             <form onSubmit={addRoom}>
               <label htmlFor="room-name">Room Name</label>
               <input type="text" name="room-name" min={1} required />
-              <Button type="submit" label="Submit" />
+              <Button variant="secondary" type="submit" children="Submit" />
             </form>
           </div>
         </section>

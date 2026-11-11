@@ -1,3 +1,5 @@
+@import url("variables.css");
+
 body {
   line-height: 1.5em;
   background-color: #e6e6e6;
@@ -30,7 +32,7 @@ header {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: #7b9669;
+  background-color: var(--green);
 }
 
 ul {
@@ -56,42 +58,6 @@ ul li a:hover {
 
 main {
   padding: 1rem;
-}
-
-button {
-  background-color: #f8f9fa;
-  border: 1px solid #f8f9fa;
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: arial, sans-serif;
-  height: 36px;
-  line-height: 27px;
-  min-width: 54px;
-  padding: 0 12px;
-  text-align: center;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  white-space: pre;
-}
-
-button:hover {
-  border-color: #404e3b;
-  box-shadow: rgba(0, 0, 0, 0.1) 0 5px 5px;
-  color: #e6e6e6;
-  background-color: #6c8480;
-
-  /* transition: background-color 0.2s ease; */
-  transition: 0.2s ease;
-}
-
-.remove-btn:hover {
-  background-color: #dc3545;
-}
-
-button:focus {
-  border-color: #4285f4;
-  outline: none;
 }
 
 .item-info-section {
