@@ -1,3 +1,5 @@
+import Button from "./atoms/button/Button";
+
 function Header() {
   return (
     <header>
@@ -13,7 +15,11 @@ function Header() {
       </nav>
       <div>
         {/* TODO: LOGIN AUTH -> CHANGE TO USERS NAME */}
-        <button onClick={() => (window.location.href = "/login")}>Login</button>
+        <Button
+          children={"Login"}
+          variant="primary"
+          onClick={() => (window.location.href = "/login")}
+        />
       </div>
     </header>
   );

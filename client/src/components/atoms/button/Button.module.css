@@ -18,13 +18,21 @@
 .primary {
   border-color: #6c8480;
   background-color: #6c8480;
-  color: #e6e6e6;
+  color: #fff;
 }
 
-.primary:hover .secondary:hover {
+.primary:hover {
   border-color: #404e3b;
   box-shadow: rgba(0, 0, 0, 0.1) 0 5px 5px;
   background-color: #6c8480;
+  cursor: pointer;
+}
+
+.secondary:hover {
+  border-color: #404e3b;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 5px 5px;
+  background-color: #6c8480;
+  cursor: pointer;
 }
 
 .secondary {
