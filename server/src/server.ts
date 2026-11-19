@@ -76,8 +76,10 @@ app.post("/sign-up", async (req: Request, res: Response) => {
 
   // if user does not exist, add them to the database
   if (!user) {
-    const date = formatDate(new Date());
+    // user id
     const newId = crypto.randomUUID();
+    // date and time of creation: date_time
+    const date = formatDate(new Date());
     const hashedPassword = await bcrypt.hash(password, 10);
     res.sendStatus(201).json({ message: "user added to database" });
     db.prepare(
@@ -85,10 +87,10 @@ app.post("/sign-up", async (req: Request, res: Response) => {
     ).run(newId, name, username, hashedPassword, date);
     console.log("User added to database");
   } else {
+    res.status(409).json({ message: "User already exists!" });
     console.log(
       `User with username ${username} already exists! Process aborted`
     );
-    res.status(409).json({ message: "User already exists!" });
   }
 });
 

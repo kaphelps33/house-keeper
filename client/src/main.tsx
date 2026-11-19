@@ -14,7 +14,9 @@ createRoot(document.getElementById("root")!).render(
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        {/* TODO: USER CAN VIEW MAIN ONLY WHEN LOGGED IN */}
         <Route path="/main" element={<App />} />
+        {/* TODO: LOGIN AND SIGNUP ONLY WHEN USER IS NOT LOGGED IN */}
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />
       </Routes>

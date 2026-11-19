@@ -3,17 +3,17 @@ import Input from "../../atoms/input/Input";
 
 interface FormFieldProps {
   type: string;
-  label: string;
+  children: string;
   id: string;
   min?: number;
   max?: number;
   required: boolean;
 }
 
-function FormField({ type, label, id, min, max, required }: FormFieldProps) {
+function FormField({ type, children, id, min, max, required }: FormFieldProps) {
   return (
     <div>
-      <Label label={label} id={id} htmlFor={id} />
+      <Label children={children} id={id} htmlFor={id} />
       <Input
         type={type}
         id={id}

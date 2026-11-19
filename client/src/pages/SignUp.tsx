@@ -19,12 +19,18 @@ function SignUp() {
   const navigate = useNavigate();
 
   const addUser = async (event: React.SubmitEvent<HTMLFormElement>) => {
-    console.log("Adding user...");
     event.preventDefault();
     setIsLoading(true);
     setError(null);
 
     const newUser: NewUser = { name, username, password };
+    if (name === "" || username === "" || password === "") {
+      // if the user submits by forcing he button to submit, abort and reset
+      alert(
+        "Form not submitted properly.\nPlease make sure all fields are filled out prior to submission."
+      );
+      window.location.reload();
+    }
 
     try {
       const response = await fetch("http://localhost:3000/sign-up", {
@@ -35,6 +41,7 @@ function SignUp() {
         body: JSON.stringify(newUser)
       });
 
+      // error handling
       if (!response.ok) {
         if (response.status == 409) {
           // Failed to add user to database due to conflicting usernames.

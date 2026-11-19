@@ -1,11 +1,11 @@
 import type { ComponentProps } from "react";
 
 interface LabelProps extends ComponentProps<"label"> {
-  label: string;
+  children: string;
 }
 
-function Label({ label, ...rest }: LabelProps) {
-  return <label {...rest}>{label}</label>;
+function Label({ children, ...rest }: LabelProps) {
+  return <label {...rest}>{children}</label>;
 }
 
 export default Label;
