@@ -69,7 +69,7 @@ app.post("/sign-up", async (req: Request, res: Response) => {
 
   // check if user exists
   const findUser = db.prepare(
-    "SELECT id, username FROM Users WHERE username = ?"
+    "SELECT id, username FROM Users WHERE username = ?;"
   );
 
   const user = findUser.get(username) as User | undefined;
@@ -79,13 +79,16 @@ app.post("/sign-up", async (req: Request, res: Response) => {
     const date = formatDate(new Date());
     const newId = crypto.randomUUID();
     const hashedPassword = await bcrypt.hash(password, 10);
+    res.sendStatus(201).json({ message: "user added to database" });
     db.prepare(
-      "INSERT INTO Users (id, name, username, password_hash, date_created) VALUES (?, ?, ?, ?, ?)"
+      "INSERT INTO Users (id, name, username, password_hash, date_created) VALUES (?, ?, ?, ?, ?);"
     ).run(newId, name, username, hashedPassword, date);
-    res.json({ message: "User added to database" });
     console.log("User added to database");
   } else {
-    res.json({ message: "User already exists!" });
+    console.log(
+      `User with username ${username} already exists! Process aborted`
+    );
+    res.status(409).json({ message: "User already exists!" });
   }
 });
 

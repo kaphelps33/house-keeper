@@ -36,23 +36,22 @@ function SignUp() {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to create user: ${response.status}`);
+        if (response.status == 409) {
+          // Failed to add user to database due to conflicting usernames.
+          alert(
+            `A user with the username ${username} already exists! Please provide a different username and try again.`
+          );
+        }
+      } else {
+        // if the user creation is successful, redirect to login
+        navigate("/login", { replace: true });
       }
-
-      const createdUser = await response.json();
-      alert(`User ${createdUser} created!`);
-
-      setName("");
-      setUsername("");
-      setPassword("");
-      setMatch("");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An unexpected error occurred"
       );
     } finally {
       setIsLoading(false);
-      navigate("/login", { replace: true });
     }
   };
 
