@@ -1,7 +1,6 @@
 import type { Item } from "../types/Item";
 import type { Room } from "../types/Room";
 import Button from "./atoms/button/Button";
-import FormField from "./molecules/formField/FormField";
 
 interface AddItemModalContentProps {
   onClose: () => void;
@@ -35,7 +34,7 @@ function AddItemModalContent({
       <div className="modal-content">
         <h4>Add Item</h4>
         <form onSubmit={handleAddItem} className="add-item-form">
-          <FormField label="Item Name" id="item-name" min={1} required />
+          {/* <FormField label="Item Name" id="item-name" min={1} required /> */}
           {/* <label htmlFor="item-name">Item Name</label>
           <Input type="text" name="item-name" min={1} required /> */}
           {/* <label htmlFor="item-room">Room</label> */}
@@ -46,9 +45,9 @@ function AddItemModalContent({
               </option>
             ))}
           </select>
-          <Button label="Submit" type="submit" />
+          <Button children="Submit" type="submit" />
         </form>
-        <Button label="Close" onClick={onClose} />
+        <Button children="Close" onClick={onClose} />
       </div>
     </div>
   );
