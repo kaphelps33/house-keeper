@@ -23,6 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
+.env
+.env*
+
 # Ignore SQLite databases
 *.sqlite
 *.sqlite3

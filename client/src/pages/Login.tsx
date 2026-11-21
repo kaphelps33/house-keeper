@@ -9,12 +9,11 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [success, setSuccess] = useState(false);
   const { setAuth } = useAuth();
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setUsername("");
-    setPassword("");
 
     const user = { username, password };
 
@@ -31,15 +30,26 @@ function Login() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user)
-      });
-
-      const data = await response.json();
-
-      console.log(data);
-
-      if (!response.ok) {
-        alert("Error");
-      }
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message === "success") {
+            localStorage.setItem("jwt", data.token);
+            console.log(data);
+            setUsername("");
+            setPassword("");
+            setSuccess(true);
+          } else {
+            switch (data.status) {
+              case 400:
+                setErrorMessage("Username and password are required!");
+                break;
+              case 401:
+                setErrorMessage("Incorrect username or password!");
+                break;
+            }
+          }
+        });
     } catch (err) {
       setErrorMessage(
         err instanceof Error ? err.message : "An unexpected error occurred!"
