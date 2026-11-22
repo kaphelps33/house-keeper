@@ -2,7 +2,16 @@ import express from "express";
 import cors from "cors";
 import Database from "better-sqlite3";
 import bcrypt from "bcryptjs";
-import type { Request, Response } from "express";
+import cookieParser from "cookie-parser";
+import type { NextFunction, Request, Response } from "express";
+
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: string;
+    }
+  }
+}
 
 require("dotenv").config();
 
@@ -52,6 +61,7 @@ function formatDate(date: Date, dateDivider: string = "-") {
 export const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 var jwt = require("jsonwebtoken");
 
@@ -128,16 +138,47 @@ app.post("/log-in", async (req: Request, res: Response) => {
       console.log("All checks passed! User logged in!");
       const accessToken = jwt.sign(
         {
-          UserInfo: {
-            username: user.username
-          }
+          id: user.id
         },
         process.env.JWT_PRIVATE_KEY,
         { expiresIn: "1h" }
       );
-      return res
-        .status(200)
-        .json({ message: "success", User: { user }, accessToken });
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true, // no JavaScript access
+        secure: true,
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000
+      });
+      return res.status(200).json({ message: "success", User: { user } });
     }
+  }
+});
+
+function verifyToken(req: Request, res: Response, next: NextFunction) {
+  const token = req.cookies.accessToken;
+
+  if (!token) return res.status(403).send("access denied");
+
+  jwt.verify(token, process.env.JWT_PRIVATE_KEY, (err, decoded) => {
+    if (err || typeof decoded === "string" || !decoded) {
+      return res.status(403).send("access denied");
+    }
+
+    req.userId = decoded.id as string;
+
+    next();
+  });
+}
+
+app.get("/api/auth/me", verifyToken, (req: Request, res: Response) => {
+  const token = req.cookies.accessToken;
+  if (!token) {
+    return res.status(403).send("access denied");
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+    res.json({ authenticated: true, user: decoded });
+  } catch {
+    res.status(401).json({ authenticated: false });
   }
 });

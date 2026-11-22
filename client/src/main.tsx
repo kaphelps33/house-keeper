@@ -19,7 +19,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/" element={<Home />} />
           {/* TODO: USER CAN VIEW MAIN ONLY WHEN LOGGED IN */}
           <Route element={<RequireAuth />}>
-            <Route path="/main" element={<App />} />
+            <Route path="/dashboard" element={<App />} />
           </Route>
           {/* TODO: LOGIN AND SIGNUP ONLY WHEN USER IS NOT LOGGED IN */}
           <Route path="/login" element={<Login />} />

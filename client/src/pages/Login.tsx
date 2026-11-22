@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../components/atoms/button/Button";
 import useAuth from "../hooks/useAuth";
 import "./Login.css";
@@ -11,6 +12,7 @@ function Login() {
   const [errorMessage, setErrorMessage] = useState("");
   const [success, setSuccess] = useState(false);
   const { setAuth } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -39,6 +41,8 @@ function Login() {
             setUsername("");
             setPassword("");
             setSuccess(true);
+            setAuth(data);
+            navigate("/dashboard", { replace: true });
           } else {
             switch (data.status) {
               case 400:

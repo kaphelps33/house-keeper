@@ -1,6 +1,8 @@
 import Button from "./atoms/button/Button";
+import useAuth from "../hooks/useAuth";
 
 function Header() {
+  const user = useAuth();
   return (
     <header>
       <h1>
@@ -8,13 +10,14 @@ function Header() {
       </h1>
       <nav>
         <ul>
-          <li>
-            <a href="/main">Main</a>
-          </li>
+          {user && (
+            <li>
+              <a href="/dashboard">Dashboard</a>
+            </li>
+          )}
         </ul>
       </nav>
       <div>
-        {/* TODO: LOGIN AUTH -> CHANGE TO USERS NAME */}
         <Button
           children={"Login"}
           variant="primary"
