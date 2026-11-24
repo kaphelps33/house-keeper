@@ -1,29 +1,35 @@
-import Button from "./atoms/button/Button";
+import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import Button from "./atoms/button/Button";
 
+/**
+ * Global page header component
+ */
 function Header() {
-  const user = useAuth();
+  const { auth } = useAuth();
   return (
-    <header>
-      <h1>
-        <a href="/">House Keeper</a>
-      </h1>
+    <header className="p-3 flex flex-row items-center justify-between bg-light-green">
+      <Link to="/" className="text-3xl font-black">
+        House Keeper
+      </Link>
       <nav>
         <ul>
-          {user && (
-            <li>
-              <a href="/dashboard">Dashboard</a>
-            </li>
-          )}
+          <li>
+            <Link to="/dashboard">Dashboard</Link>
+          </li>
         </ul>
       </nav>
-      <div>
-        <Button
-          children={"Login"}
-          variant="primary"
-          onClick={() => (window.location.href = "/login")}
-        />
-      </div>
+      {auth.accessToken ? (
+        <p>Hello {auth.username}!</p>
+      ) : (
+        <div>
+          <Button
+            children={"Login"}
+            variant="primary"
+            onClick={() => (window.location.href = "/login")}
+          />
+        </div>
+      )}
     </header>
   );
 }

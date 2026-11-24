@@ -1,25 +1,39 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link, useLocation, data } from "react-router-dom";
+import axios from "../api/axios";
 import Button from "../components/atoms/button/Button";
 import useAuth from "../hooks/useAuth";
-import "./Login.css";
+import { isAxiosError } from "axios";
+
+const LOGIN_URL = "/log-in";
 
 function Login() {
+  const { setAuth } = useAuth();
   const userRef = useRef<HTMLInputElement>(null);
-  const errorRef = useRef(null);
+  const errorRef = useRef<HTMLParagraphElement>(null);
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [success, setSuccess] = useState(false);
-  const { setAuth } = useAuth();
+  const [error, setError] = useState("");
+
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+
+  // focus on username field on page load
+  useEffect(() => {
+    userRef.current?.focus();
+  }, []);
+
+  // clears errors if user changes username or password
+  useEffect(() => {
+    setError("");
+  }, [username, password]);
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const user = { username, password };
-
-    if (username === "" || password === "") {
+    if (!username || !password) {
       // if the user submits by forcing the button to submit, abort and reset
       alert(
         "Form not submitted properly.\nPlease make sure all fields are filled out prior to submission."
@@ -28,88 +42,97 @@ function Login() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/log-in", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user)
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.message === "success") {
-            localStorage.setItem("jwt", data.token);
-            console.log(data);
-            setUsername("");
-            setPassword("");
-            setSuccess(true);
-            setAuth(data);
-            navigate("/dashboard", { replace: true });
-          } else {
-            switch (data.status) {
-              case 400:
-                setErrorMessage("Username and password are required!");
-                break;
-              case 401:
-                setErrorMessage("Incorrect username or password!");
-                break;
-            }
-          }
-        });
-    } catch (err) {
-      setErrorMessage(
-        err instanceof Error ? err.message : "An unexpected error occurred!"
+      const response = await axios.post(
+        LOGIN_URL,
+        JSON.stringify({ username, password }),
+        {
+          headers: {
+            "Content-Type": "application/json"
+          },
+          withCredentials: true
+        }
       );
+      setUsername("");
+      setPassword("");
+      const accessToken = response?.data?.jwt;
+      setAuth({ username, password, accessToken });
+      navigate(from, { replace: true });
+    } catch (error) {
+      if (isAxiosError(error)) {
+        if (!error.response) {
+          // if the server gives no response
+          setError("No server response");
+        } else if (error.response.status === 400) {
+          // if the username or password is missing
+          setError("Missing username or password");
+        } else if (error.response.status === 401) {
+          setError("Incorrect username or password");
+        } else {
+          setError("Registration failed.");
+        }
+        errorRef.current?.focus();
+      }
     }
   };
 
-  // focus on username field on page load
-  useEffect(() => {
-    userRef.current?.focus();
-  }, []);
-
-  // clears errors
-  useEffect(() => {
-    setErrorMessage("");
-  }, [username, password]);
-
   return (
-    <main className="login-container">
-      <section className="login-wrapper">
-        <p
-          ref={errorRef}
-          className={errorMessage ? "error-message" : "offscreen"}
-          aria-live="assertive"
-        >
-          {errorMessage}
-        </p>
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit} className="login-form">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            ref={userRef}
-            autoComplete="off"
-            onChange={(event) => setUsername(event.target.value)}
-            value={username}
-            required
-          />
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            onChange={(event) => setPassword(event.target.value)}
-            value={password}
-            required
-          />
-
-          {/* <button type="submit">Log In</button> */}
-          <Button variant="primary" type="submit" children="Log In" />
-        </form>
-        <small>
-          Don't have an account? <a href="/sign-up">Make one here!</a>
-        </small>
-      </section>
-    </main>
+    <section className="flex flex-col items-center justify-center w-screen h-fill bg-off-white text-gray-700">
+      <title>House Keeper | Log In</title>
+      {/* Error message */}
+      <p
+        ref={errorRef}
+        className={`${error ? "bg-danger text-off-white" : "hidden"}`}
+        aria-live="assertive"
+      >
+        {error}
+      </p>
+      {/* Heading */}
+      <h2 className="font-bold text-xl">Login</h2>
+      {/* Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col bg-white rounded shadow-lg p-8 mt-1"
+      >
+        {/* Username field */}
+        {/* Label */}
+        <label htmlFor="username" className="font-semibold text-xs">
+          Username
+        </label>
+        {/* Input */}
+        <input
+          className="flex items-center h-12 px-4 w-64 bg-gray-200 mt-2 rounded focus:outline-none focus:ring-2"
+          type="text"
+          id="username"
+          ref={userRef}
+          value={username}
+          autoComplete="off"
+          onChange={(event) => setUsername(event.target.value)}
+          placeholder="Username"
+          required
+        />
+        <label htmlFor="password" className="font-semibold text-xs">
+          Password
+        </label>
+        <input
+          className="flex items-center h-12 px-4 w-64 bg-gray-200 mt-2 rounded focus:outline-none focus:ring-2"
+          type="password"
+          id="password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          placeholder="Password"
+          required
+        />
+        <Button variant="primary" type="submit" children="Log In" />
+        <div className="flex justify-center">
+          <small>
+            Don't have an account?{" "}
+            <Link to="/sign-up" className="text-blue-400 hover:text-blue-500">
+              Make one!
+            </Link>
+          </small>
+        </div>
+      </form>
+    </section>
   );
 }
 

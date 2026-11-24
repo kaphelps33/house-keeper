@@ -19,7 +19,7 @@ const userRooms: Room[] = [
   }
 ];
 
-function App() {
+function Dashboard() {
   const [showModal, setShowModal] = useState(false);
   const [rooms, setRooms] = useState(userRooms);
   const [showAddRoom, setShowAddRoom] = useState(false);
@@ -152,4 +152,4 @@ function App() {
   );
 }
 
-export default App;
+export default Dashboard;

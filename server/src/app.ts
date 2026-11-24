@@ -36,6 +36,7 @@ interface User {
   username: string;
   password_hash: string;
   date_created: string;
+  refreshToken: string;
 }
 
 function padTwoDigits(num: number) {
@@ -59,7 +60,12 @@ function formatDate(date: Date, dateDivider: string = "-") {
 }
 
 export const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -97,18 +103,16 @@ app.post("/sign-up", async (req: Request, res: Response) => {
       "INSERT INTO Users (id, name, username, password_hash, date_created) VALUES (?, ?, ?, ?, ?);"
     ).run(newId, name, username, hashedPassword, date);
     console.log("User added to database");
-    return res.sendStatus(201).json({ message: "user added to database" });
+    return res.status(201).json({ message: "user added to database" });
   } else {
-    res.status(409).json({ message: "User already exists!" });
     console.log(
       `User with username ${username} already exists! Process aborted`
     );
+    return res.status(409).json({ message: "User already exists!" });
   }
 });
 
 app.post("/log-in", async (req: Request, res: Response) => {
-  console.log("Attempting login with user credentials...");
-
   const { username, password } = req.body;
 
   // if proper information is not given, abort immediately
@@ -119,66 +123,58 @@ app.post("/log-in", async (req: Request, res: Response) => {
     });
   }
 
+  // get user from db with given username
   const user = db
     .prepare("SELECT * FROM Users WHERE username = ?;")
     .get(username) as User | undefined;
 
-  // if the user does not exist, send empty array
+  // if the user does not exist, send empty object
   if (!user) {
     console.log(`Could not find user with name ${username}`);
     res.status(401).json({ message: "username not found", User: [] });
   } else {
     const storedHash = user.password_hash;
-
     const isMatch = await bcrypt.compare(password, storedHash);
     // check if passwords match; if not, alert; if so, log in
     if (!isMatch) {
       res.status(401).json({ message: "incorrect password", User: [] });
     } else {
       console.log("All checks passed! User logged in!");
+      // jwt access token
       const accessToken = jwt.sign(
         {
-          id: user.id
+          UserInfo: {
+            username: user.username,
+            id: user.id
+          }
         },
         process.env.JWT_PRIVATE_KEY,
         { expiresIn: "1h" }
       );
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true, // no JavaScript access
-        secure: true,
-        sameSite: "strict",
+      // jwt refresh token
+      const refreshToken = jwt.sign(
+        { username: user.username },
+        process.env.JWT_PRIVATE_KEY,
+        { expiresIn: "1d" }
+      );
+      user.refreshToken = refreshToken;
+      res.cookie("jwt", refreshToken, {
+        httpOnly: true,
+        sameSite: "none",
         maxAge: 24 * 60 * 60 * 1000
       });
-      return res.status(200).json({ message: "success", User: { user } });
+      return res.status(200).json({ message: "success", jwt: { accessToken } });
     }
   }
 });
 
-function verifyToken(req: Request, res: Response, next: NextFunction) {
-  const token = req.cookies.accessToken;
-
-  if (!token) return res.status(403).send("access denied");
-
-  jwt.verify(token, process.env.JWT_PRIVATE_KEY, (err, decoded) => {
-    if (err || typeof decoded === "string" || !decoded) {
-      return res.status(403).send("access denied");
-    }
-
-    req.userId = decoded.id as string;
-
-    next();
+app.post("/logout", (req: Request, res: Response) => {
+  console.log("Logging out...");
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict"
   });
-}
-
-app.get("/api/auth/me", verifyToken, (req: Request, res: Response) => {
-  const token = req.cookies.accessToken;
-  if (!token) {
-    return res.status(403).send("access denied");
-  }
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
-    res.json({ authenticated: true, user: decoded });
-  } catch {
-    res.status(401).json({ authenticated: false });
-  }
+  console.log("Auth cookie cleared!");
+  return res.status(200).json({ message: "user logged out successfully" });
 });

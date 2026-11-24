@@ -2,10 +2,15 @@ import type { ComponentProps } from "react";
 
 interface LabelProps extends ComponentProps<"label"> {
   children: string;
+  htmlFor: string;
 }
 
-function Label({ children, ...rest }: LabelProps) {
-  return <label {...rest}>{children}</label>;
+function Label({ children, htmlFor, ...rest }: LabelProps) {
+  return (
+    <label {...rest} htmlFor={htmlFor} className="font-semibold text-xs">
+      {children}
+    </label>
+  );
 }
 
 export default Label;

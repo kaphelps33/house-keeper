@@ -1,35 +1,28 @@
-import { createContext, useState, useEffect } from "react";
-import type { User } from "../types/User";
+import { createContext, useState } from "react";
+import type { Dispatch, JSX, SetStateAction } from "react";
 
-type AuthContextType = {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
-  isLoading: boolean;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-};
+interface AuthState {
+  name?: string;
+  username?: string;
+  password?: string;
+  accessToken?: string;
+}
 
-const AuthContext = createContext<AuthContextType | null>(null);
+interface AuthContextType {
+  auth: AuthState;
+  setAuth: Dispatch<SetStateAction<AuthState>>;
+}
 
-export const AuthProvider = ({ children }: React.PropsWithChildren) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+const AuthContext = createContext<AuthContextType | null>({});
 
-  useEffect(() => {
-    fetch("/api/auth/me", { method: "GET", credentials: "include" })
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then((data) => setUser(data.user))
-      .catch((err) => {
-        console.error("Error: ", err);
-        setUser(null);
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
+export function AuthProvider({ children }: { children: JSX.Element }) {
+  const [auth, setAuth] = useState({});
 
   return (
-    <AuthContext.Provider value={{ user, setUser, isLoading, setIsLoading }}>
-      {!isLoading && children}
+    <AuthContext.Provider value={{ auth, setAuth }}>
+      {children}
     </AuthContext.Provider>
   );
-};
+}
 
 export default AuthContext;

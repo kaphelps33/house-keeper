@@ -33,7 +33,7 @@ function ItemCard({ item, removeItem }: ItemCardProps) {
     >
       <div className="item-card-header">
         <h3>{item.name}</h3>
-        <Button label="Remove Item" onClick={() => removeItem(item)} />
+        <Button children="Remove Item" onClick={() => removeItem(item)} />
       </div>
       {/* Select item stock */}
       <div className="item-card-body">
