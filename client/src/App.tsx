@@ -1,4 +1,5 @@
 import RequireAuth from "./components/RequireAuth";
+import PersistLogin from "./components/PersistLogin";
 import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
@@ -14,10 +15,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="sign-up" element={<SignUp />} />
-
         {/* Protected Routes */}
-        <Route element={<RequireAuth />}>
-          <Route path="dashboard" element={<Dashboard />} />
+        <Route element={<PersistLogin />}>
+          <Route element={<RequireAuth />}>
+            <Route path="dashboard" element={<Dashboard />} />
+          </Route>
         </Route>
       </Route>
     </Routes>

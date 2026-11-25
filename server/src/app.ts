@@ -23,7 +23,8 @@ db.exec(
         name TEXT NOT NULL,
         username TEXT NOT NULL UNIQUE,
         password_hash TEXT NOT NULL,
-        date_created TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        date_created TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        refresh_token TEXT DEFAULT 0
     );`
 );
 
@@ -118,8 +119,7 @@ app.post("/log-in", async (req: Request, res: Response) => {
   // if proper information is not given, abort immediately
   if (!username || !password) {
     res.status(400).json({
-      message: "username, password required",
-      User: []
+      message: "username, password required"
     });
   }
 
@@ -131,25 +131,21 @@ app.post("/log-in", async (req: Request, res: Response) => {
   // if the user does not exist, send empty object
   if (!user) {
     console.log(`Could not find user with name ${username}`);
-    res.status(401).json({ message: "username not found", User: [] });
+    res.status(401).json({ message: "username not found" });
   } else {
-    const storedHash = user.password_hash;
-    const isMatch = await bcrypt.compare(password, storedHash);
+    const isMatch = await bcrypt.compare(password, user.password_hash);
     // check if passwords match; if not, alert; if so, log in
     if (!isMatch) {
-      res.status(401).json({ message: "incorrect password", User: [] });
+      console.log("Incorrect password");
+      res.status(401).json({ message: "incorrect password" });
     } else {
-      console.log("All checks passed! User logged in!");
       // jwt access token
       const accessToken = jwt.sign(
         {
-          UserInfo: {
-            username: user.username,
-            id: user.id
-          }
+          username: user.username
         },
         process.env.JWT_PRIVATE_KEY,
-        { expiresIn: "1h" }
+        { expiresIn: "1m" }
       );
       // jwt refresh token
       const refreshToken = jwt.sign(
@@ -157,24 +153,91 @@ app.post("/log-in", async (req: Request, res: Response) => {
         process.env.JWT_PRIVATE_KEY,
         { expiresIn: "1d" }
       );
-      user.refreshToken = refreshToken;
+
+      db.prepare("UPDATE Users SET refresh_token = ? WHERE id = ?").run(
+        refreshToken,
+        user.id
+      );
+
       res.cookie("jwt", refreshToken, {
         httpOnly: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
       });
+
+      console.log("All checks passed! User logged in!");
       return res.status(200).json({ message: "success", jwt: { accessToken } });
     }
   }
 });
 
-app.post("/logout", (req: Request, res: Response) => {
-  console.log("Logging out...");
-  res.clearCookie("accessToken", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict"
+const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers["authorization"];
+  if (!authHeader) {
+    return res.send(401);
+  }
+  console.log(authHeader);
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, process.env.JWT_PRIVATE_KEY, (err, decoded) => {
+    if (err) {
+      // invalid token
+      return res.status(403);
+    }
+    req.user = decoded.username;
+    next();
   });
-  console.log("Auth cookie cleared!");
-  return res.status(200).json({ message: "user logged out successfully" });
+};
+
+app.get("/refresh", (req: Request, res: Response, next: NextFunction) => {
+  console.log("refreshing");
+  const cookies = req.cookies;
+
+  if (!cookies?.jwt) {
+    return res.status(401);
+  }
+
+  const refreshToken = cookies.jwt;
+  const foundUser = db
+    .prepare("SELECT * FROM Users WHERE refresh_token = ?")
+    .get(refreshToken) as User;
+  if (!foundUser) {
+    return res.status(403); // forbidden
+  }
+  jwt.verify(refreshToken, process.env.JWT_PRIVATE_KEY, (err, decoded) => {
+    if (err || foundUser.username !== decoded.username) {
+      return res.sendStatus(403);
+    }
+    const accessToken = jwt.sign(
+      { username: decoded.username },
+      process.env.JWT_PRIVATE_KEY,
+      { expiresIn: "10s" }
+    );
+    res.json({ accessToken });
+  });
+});
+
+app.get("/logout", (req: Request, res: Response) => {
+  console.log("Logging out...");
+  const cookie = req.cookies;
+  if (!cookie.jwt) {
+    return res.sendStatus(204); // No content
+  }
+  const refreshToken = cookie.jwt;
+
+  // is refresh token in db
+  const foundUser = db
+    .prepare("SELECT * FROM Users WHERE refresh_token = ?")
+    .get(refreshToken) as User;
+
+  if (!foundUser) {
+    res.clearCookie("jwt", { httpOnly: true, secure: true });
+    return res.sendStatus(204);
+  }
+
+  // clear users refresh token
+  db.prepare("UPDATE Users SET refresh_token = '' WHERE id = ?").run(
+    foundUser.id
+  );
+
+  res.clearCookie("jwt", { httpOnly: true, secure: true });
+  res.sendStatus(204);
 });

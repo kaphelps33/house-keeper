@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import AddItemModalContent from "../components/AddItemModalContent";
 import type { Item } from "../types/Item";
 import type { Room } from "../types/Room";
 import ItemSection from "../components/ItemSection";
 import Button from "../components/atoms/button/Button";
+import { axiosPrivate } from "../api/axios";
 
 const userRooms: Room[] = [
   {

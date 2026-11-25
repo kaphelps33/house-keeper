@@ -55,8 +55,8 @@ function Login() {
       setUsername("");
       setPassword("");
       const accessToken = response?.data?.jwt;
-      setAuth({ username, password, accessToken });
-      navigate(from, { replace: true });
+      setAuth({ username, accessToken });
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       if (isAxiosError(error)) {
         if (!error.response) {
