@@ -145,7 +145,7 @@ app.post("/log-in", async (req: Request, res: Response) => {
           username: user.username
         },
         process.env.JWT_PRIVATE_KEY,
-        { expiresIn: "1m" }
+        { expiresIn: "15s" }
       );
       // jwt refresh token
       const refreshToken = jwt.sign(

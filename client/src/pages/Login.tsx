@@ -8,7 +8,7 @@ import { isAxiosError } from "axios";
 const LOGIN_URL = "/log-in";
 
 function Login() {
-  const { setAuth } = useAuth();
+  const { setAuth, persist, setPersist } = useAuth();
   const userRef = useRef<HTMLInputElement>(null);
   const errorRef = useRef<HTMLParagraphElement>(null);
 
@@ -17,8 +17,6 @@ function Login() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
 
   // focus on username field on page load
   useEffect(() => {
@@ -75,6 +73,14 @@ function Login() {
     }
   };
 
+  const togglePersist = () => {
+    setPersist((prev) => !prev);
+  };
+
+  useEffect(() => {
+    localStorage.setItem("persist", persist);
+  }, [persist]);
+
   return (
     <section className="flex flex-col items-center justify-center w-screen h-fill bg-off-white text-gray-700">
       <title>House Keeper | Log In</title>
@@ -94,13 +100,11 @@ function Login() {
         className="flex flex-col bg-white rounded shadow-lg p-8 mt-1"
       >
         {/* Username field */}
-        {/* Label */}
         <label htmlFor="username" className="font-semibold text-xs">
           Username
         </label>
-        {/* Input */}
         <input
-          className="flex items-center h-12 px-4 w-64 bg-gray-200 mt-2 rounded focus:outline-none focus:ring-2"
+          className="flex items-center h-12 px-4 w-64 bg-gray-200 rounded focus:outline-none focus:ring-2"
           type="text"
           id="username"
           ref={userRef}
@@ -110,11 +114,12 @@ function Login() {
           placeholder="Username"
           required
         />
-        <label htmlFor="password" className="font-semibold text-xs">
+        {/* Password Field */}
+        <label htmlFor="password" className="font-semibold text-xs mt-3">
           Password
         </label>
         <input
-          className="flex items-center h-12 px-4 w-64 bg-gray-200 mt-2 rounded focus:outline-none focus:ring-2"
+          className="flex items-center h-12 px-4 w-64 bg-gray-200 mb-3 rounded focus:outline-none focus:ring-2"
           type="password"
           id="password"
           value={password}
@@ -123,6 +128,17 @@ function Login() {
           required
         />
         <Button variant="primary" type="submit" children="Log In" />
+        <div className="flex gap-1">
+          <input
+            type="checkbox"
+            id="persist"
+            onChange={() => togglePersist()}
+            checked={persist}
+          />
+          <label htmlFor="persist" className="text-gray-600">
+            <small>Trust this device?</small>
+          </label>
+        </div>
         <div className="flex justify-center">
           <small>
             Don't have an account?{" "}
