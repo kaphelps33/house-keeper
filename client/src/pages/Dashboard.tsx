@@ -5,7 +5,7 @@ import type { Item } from "../types/Item";
 import type { Room } from "../types/Room";
 import ItemSection from "../components/ItemSection";
 import Button from "../components/atoms/button/Button";
-import { axiosPrivate } from "../api/axios";
+import axios, { axiosPrivate } from "../api/axios";
 
 const userRooms: Room[] = [
   {
@@ -105,51 +105,49 @@ function Dashboard() {
   };
 
   return (
-    <>
-      {/* Main */}
-      <main>
-        {/* Add item/room section */}
-        <section className="item-info-section">
-          <h2>Room and Item Manager</h2>
-          <div>
-            <Button
-              children="Add New Item"
-              variant="secondary"
-              onClick={() => setShowModal((prev) => !prev)}
-            />
-            {showModal &&
-              createPortal(
-                <AddItemModalContent
-                  onClose={() => setShowModal(false)}
-                  onFormSubmit={handleAddItemFromForm}
-                  rooms={rooms}
-                />,
-                document.body
-              )}
-          </div>
-          {/* Button that shows/hides form to add a new room */}
+    <main>
+      <title>House Keeper | Dashboard</title>
+      {/* Add item/room section */}
+      <section className="item-info-section">
+        <h2>Room and Item Manager</h2>
+        <div>
           <Button
-            variant="primary"
-            children={!showAddRoom ? "Add New Room" : "Hide"}
-            onClick={() => setShowAddRoom(!showAddRoom)}
+            children="Add New Item"
+            variant="secondary"
+            onClick={() => setShowModal((prev) => !prev)}
           />
-          {/* Form for adding a new room */}
-          <div id="add-room" hidden={!showAddRoom}>
-            <form onSubmit={addRoom}>
-              <label htmlFor="room-name">Room Name</label>
-              <input type="text" name="room-name" min={1} required />
-              <Button variant="secondary" type="submit" children="Submit" />
-            </form>
-          </div>
-        </section>
-        {/* Lists all items and handles operations on them */}
-        <ItemSection
-          rooms={rooms}
-          removeItemFromRoom={handleRemoveItem}
-          removeRoom={handleRemoveRoom}
+          {showModal &&
+            createPortal(
+              <AddItemModalContent
+                onClose={() => setShowModal(false)}
+                onFormSubmit={handleAddItemFromForm}
+                rooms={rooms}
+              />,
+              document.body
+            )}
+        </div>
+        {/* Button that shows/hides form to add a new room */}
+        <Button
+          variant="primary"
+          children={!showAddRoom ? "Add New Room" : "Hide"}
+          onClick={() => setShowAddRoom(!showAddRoom)}
         />
-      </main>
-    </>
+        {/* Form for adding a new room */}
+        <div id="add-room" hidden={!showAddRoom}>
+          <form onSubmit={addRoom}>
+            <label htmlFor="room-name">Room Name</label>
+            <input type="text" name="room-name" min={1} required />
+            <Button variant="secondary" type="submit" children="Submit" />
+          </form>
+        </div>
+      </section>
+      {/* Lists all items and handles operations on them */}
+      <ItemSection
+        rooms={rooms}
+        removeItemFromRoom={handleRemoveItem}
+        removeRoom={handleRemoveRoom}
+      />
+    </main>
   );
 }
 

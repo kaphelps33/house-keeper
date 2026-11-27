@@ -1,9 +1,11 @@
 import express from "express";
 import cors from "cors";
-import Database from "better-sqlite3";
+// import Database from "better-sqlite3";
 import bcrypt from "bcryptjs";
 import cookieParser from "cookie-parser";
 import type { NextFunction, Request, Response } from "express";
+import database from "./db/db";
+import User from "./models/user.model";
 
 declare global {
   namespace Express {
@@ -14,22 +16,6 @@ declare global {
 }
 
 require("dotenv").config();
-
-const db = new Database("database.db");
-
-db.exec(
-  `CREATE TABLE IF NOT EXISTS Users (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        username TEXT NOT NULL UNIQUE,
-        password_hash TEXT NOT NULL,
-        date_created TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        refresh_token TEXT DEFAULT 0
-    );`
-);
-
-db.pragma("journal_mode = WAL");
-db.pragma("foreign_keys = on");
 
 interface User {
   id: string;
@@ -77,7 +63,11 @@ app.get("/api/health", (req: Request, res: Response) => {
 });
 
 app.post("/sign-up", async (req: Request, res: Response) => {
-  const { name, username, password } = req.body;
+  const {
+    name,
+    username,
+    password
+  }: { name: string; username: string; password: string } = req.body;
 
   // if proper information is not given, abort immediately
   if (!name || !username || !password) {
@@ -87,22 +77,16 @@ app.post("/sign-up", async (req: Request, res: Response) => {
   }
 
   // check if user exists
-  const findUser = db.prepare(
-    "SELECT id, username FROM Users WHERE username = ?;"
-  );
-
-  const user = findUser.get(username) as User | undefined;
+  const user = User.doesUserExist(username);
+  console.log(user);
 
   // if user does not exist, add them to the database
   if (!user) {
-    // user id
-    const newId = crypto.randomUUID();
     // date and time of creation: date_time
     const date = formatDate(new Date());
     const hashedPassword = await bcrypt.hash(password, 10);
-    db.prepare(
-      "INSERT INTO Users (id, name, username, password_hash, date_created) VALUES (?, ?, ?, ?, ?);"
-    ).run(newId, name, username, hashedPassword, date);
+    // Add new user to database
+    User.createNewUser(name, username, hashedPassword, date);
     console.log("User added to database");
     return res.status(201).json({ message: "user added to database" });
   } else {
@@ -124,9 +108,7 @@ app.post("/log-in", async (req: Request, res: Response) => {
   }
 
   // get user from db with given username
-  const user = db
-    .prepare("SELECT * FROM Users WHERE username = ?;")
-    .get(username) as User | undefined;
+  const user = User.getByUsername(username) as User | undefined;
 
   // if the user does not exist, send empty object
   if (!user) {
@@ -154,10 +136,9 @@ app.post("/log-in", async (req: Request, res: Response) => {
         { expiresIn: "1d" }
       );
 
-      db.prepare("UPDATE Users SET refresh_token = ? WHERE id = ?").run(
-        refreshToken,
-        user.id
-      );
+      database
+        .prepare("UPDATE User SET refresh_token = ? WHERE user_id = ?")
+        .run(refreshToken, user.id);
 
       res.cookie("jwt", refreshToken, {
         httpOnly: true,
@@ -196,8 +177,8 @@ app.get("/refresh", (req: Request, res: Response, next: NextFunction) => {
   }
 
   const refreshToken = cookies.jwt;
-  const foundUser = db
-    .prepare("SELECT * FROM Users WHERE refresh_token = ?")
+  const foundUser = database
+    .prepare("SELECT * FROM User WHERE refresh_token = ?")
     .get(refreshToken) as User;
   if (!foundUser) {
     return res.status(403); // forbidden
@@ -224,8 +205,8 @@ app.get("/logout", (req: Request, res: Response) => {
   const refreshToken = cookie.jwt;
 
   // is refresh token in db
-  const foundUser = db
-    .prepare("SELECT * FROM Users WHERE refresh_token = ?")
+  const foundUser = database
+    .prepare("SELECT * FROM User WHERE refresh_token = ?")
     .get(refreshToken) as User;
 
   if (!foundUser) {
@@ -234,9 +215,9 @@ app.get("/logout", (req: Request, res: Response) => {
   }
 
   // clear users refresh token
-  db.prepare("UPDATE Users SET refresh_token = '' WHERE id = ?").run(
-    foundUser.id
-  );
+  database
+    .prepare("UPDATE User SET refresh_token = '' WHERE id = ?")
+    .run(foundUser.id);
 
   res.clearCookie("jwt", { httpOnly: true, secure: true });
   res.sendStatus(204);
