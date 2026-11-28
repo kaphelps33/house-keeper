@@ -1,10 +1,15 @@
 import { Router } from "express";
+import { login, logout, refresh, signUp } from "../controllers/user.controller";
 
-export const router = Router();
+export const userRouter = Router();
 
 // Public routes
-router.post("/sign-up");
-router.post("/login");
-router.get("/refresh");
-router.get("/logout");
+userRouter.post("/sign-up", signUp);
+userRouter.post("/login", login);
+userRouter.get("/refresh", refresh);
+
 // Private routes
+// TODO: MAKE THIS ROUTE PROTECTED
+userRouter.get("/logout", logout);
+
+module.exports = userRouter;

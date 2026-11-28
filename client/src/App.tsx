@@ -6,8 +6,10 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
+import useAuth from "./hooks/useAuth";
 
 function App() {
+  const { auth } = useAuth();
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
@@ -18,7 +20,10 @@ function App() {
         {/* Protected Routes */}
         <Route element={<PersistLogin />}>
           <Route element={<RequireAuth />}>
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route
+              path={`${auth.username}/dashboard`}
+              element={<Dashboard />}
+            />
           </Route>
         </Route>
       </Route>

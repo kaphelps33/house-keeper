@@ -1,11 +1,8 @@
 import express from "express";
 import cors from "cors";
-// import Database from "better-sqlite3";
-import bcrypt from "bcryptjs";
 import cookieParser from "cookie-parser";
 import type { NextFunction, Request, Response } from "express";
-import database from "./db/db";
-import User from "./models/user.model";
+import { userRouter } from "./routes/user.routes";
 
 declare global {
   namespace Express {
@@ -16,35 +13,6 @@ declare global {
 }
 
 require("dotenv").config();
-
-interface User {
-  id: string;
-  name: string;
-  username: string;
-  password_hash: string;
-  date_created: string;
-  refreshToken: string;
-}
-
-function padTwoDigits(num: number) {
-  return num.toString().padStart(2, "0");
-}
-
-function formatDate(date: Date, dateDivider: string = "-") {
-  return (
-    [
-      date.getFullYear(),
-      padTwoDigits(date.getMonth() + 1),
-      padTwoDigits(date.getDate())
-    ].join(dateDivider) +
-    " " +
-    [
-      padTwoDigits(date.getHours()),
-      padTwoDigits(date.getMinutes()),
-      padTwoDigits(date.getSeconds())
-    ].join(":")
-  );
-}
 
 export const app = express();
 app.use(
@@ -62,94 +30,7 @@ app.get("/api/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
 
-app.post("/sign-up", async (req: Request, res: Response) => {
-  const {
-    name,
-    username,
-    password
-  }: { name: string; username: string; password: string } = req.body;
-
-  // if proper information is not given, abort immediately
-  if (!name || !username || !password) {
-    return res
-      .status(404)
-      .json({ error: "Name, Username, and Password are required!" });
-  }
-
-  // check if user exists
-  const user = User.doesUserExist(username);
-  console.log(user);
-
-  // if user does not exist, add them to the database
-  if (!user) {
-    // date and time of creation: date_time
-    const date = formatDate(new Date());
-    const hashedPassword = await bcrypt.hash(password, 10);
-    // Add new user to database
-    User.createNewUser(name, username, hashedPassword, date);
-    console.log("User added to database");
-    return res.status(201).json({ message: "user added to database" });
-  } else {
-    console.log(
-      `User with username ${username} already exists! Process aborted`
-    );
-    return res.status(409).json({ message: "User already exists!" });
-  }
-});
-
-app.post("/log-in", async (req: Request, res: Response) => {
-  const { username, password } = req.body;
-
-  // if proper information is not given, abort immediately
-  if (!username || !password) {
-    res.status(400).json({
-      message: "username, password required"
-    });
-  }
-
-  // get user from db with given username
-  const user = User.getByUsername(username) as User | undefined;
-
-  // if the user does not exist, send empty object
-  if (!user) {
-    console.log(`Could not find user with name ${username}`);
-    res.status(401).json({ message: "username not found" });
-  } else {
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    // check if passwords match; if not, alert; if so, log in
-    if (!isMatch) {
-      console.log("Incorrect password");
-      res.status(401).json({ message: "incorrect password" });
-    } else {
-      // jwt access token
-      const accessToken = jwt.sign(
-        {
-          username: user.username
-        },
-        process.env.JWT_PRIVATE_KEY,
-        { expiresIn: "15s" }
-      );
-      // jwt refresh token
-      const refreshToken = jwt.sign(
-        { username: user.username },
-        process.env.JWT_PRIVATE_KEY,
-        { expiresIn: "1d" }
-      );
-
-      database
-        .prepare("UPDATE User SET refresh_token = ? WHERE user_id = ?")
-        .run(refreshToken, user.id);
-
-      res.cookie("jwt", refreshToken, {
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
-      });
-
-      console.log("All checks passed! User logged in!");
-      return res.status(200).json({ message: "success", jwt: { accessToken } });
-    }
-  }
-});
+app.use("/user", userRouter);
 
 const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers["authorization"];
@@ -167,58 +48,3 @@ const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     next();
   });
 };
-
-app.get("/refresh", (req: Request, res: Response, next: NextFunction) => {
-  console.log("refreshing");
-  const cookies = req.cookies;
-
-  if (!cookies?.jwt) {
-    return res.status(401);
-  }
-
-  const refreshToken = cookies.jwt;
-  const foundUser = database
-    .prepare("SELECT * FROM User WHERE refresh_token = ?")
-    .get(refreshToken) as User;
-  if (!foundUser) {
-    return res.status(403); // forbidden
-  }
-  jwt.verify(refreshToken, process.env.JWT_PRIVATE_KEY, (err, decoded) => {
-    if (err || foundUser.username !== decoded.username) {
-      return res.sendStatus(403);
-    }
-    const accessToken = jwt.sign(
-      { username: decoded.username },
-      process.env.JWT_PRIVATE_KEY,
-      { expiresIn: "10s" }
-    );
-    res.json({ accessToken });
-  });
-});
-
-app.get("/logout", (req: Request, res: Response) => {
-  console.log("Logging out...");
-  const cookie = req.cookies;
-  if (!cookie.jwt) {
-    return res.sendStatus(204); // No content
-  }
-  const refreshToken = cookie.jwt;
-
-  // is refresh token in db
-  const foundUser = database
-    .prepare("SELECT * FROM User WHERE refresh_token = ?")
-    .get(refreshToken) as User;
-
-  if (!foundUser) {
-    res.clearCookie("jwt", { httpOnly: true, secure: true });
-    return res.sendStatus(204);
-  }
-
-  // clear users refresh token
-  database
-    .prepare("UPDATE User SET refresh_token = '' WHERE id = ?")
-    .run(foundUser.id);
-
-  res.clearCookie("jwt", { httpOnly: true, secure: true });
-  res.sendStatus(204);
-});

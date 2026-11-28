@@ -1,7 +1,7 @@
 import database from "../db/db";
 
 interface UserModel {
-  id: string;
+  id: number;
   name: string;
   username: string;
   password_hash: string;
@@ -59,6 +59,18 @@ const User = {
    */
   doesUserExist(username: string) {
     return this.getByUsername(username) ? true : false;
+  },
+
+  getUserByRefreshToken(refreshToken: string) {
+    return database
+      .prepare("SELECT * FROM User WHERE refresh_token = ?")
+      .get(refreshToken) as UserModel;
+  },
+
+  updateUserRefreshToken(refreshToken: string, userId: number) {
+    database
+      .prepare("UPDATE User SET refresh_token = ? WHERE user_id = ?")
+      .run(refreshToken, userId);
   }
 };
 

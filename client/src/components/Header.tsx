@@ -25,7 +25,7 @@ function Header() {
         <nav>
           <ul>
             <li>
-              <Link to="/dashboard">Dashboard</Link>
+              <Link to={`${auth.username}/dashboard`}>Dashboard</Link>
             </li>
           </ul>
         </nav>
